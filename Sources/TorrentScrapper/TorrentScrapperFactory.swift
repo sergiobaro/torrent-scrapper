@@ -4,7 +4,8 @@ public class TorrentScrapperFactory {
 
   public static func makeTorlock() -> TorrentScrapper {
     return TorrentScrapper(
-      provider: Torlock()
+      provider: Torlock(),
+      logger: TerminalTorrentLogger()
     )
   }
 }

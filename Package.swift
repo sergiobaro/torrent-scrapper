@@ -16,9 +16,6 @@ let package = Package(
         .target(
             name: "torrent-scrapper",
             dependencies: ["TorrentScrapper"]),
-        .testTarget(
-            name: "torrent-scrapperTests",
-            dependencies: ["torrent-scrapper"]),
         .target(
             name: "TorrentScrapper",
             dependencies: ["SwiftSoup"]),
