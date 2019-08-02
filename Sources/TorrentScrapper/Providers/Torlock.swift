@@ -3,7 +3,7 @@ import SwiftSoup
 
 class Torlock {
 
-  private let domain = "https://www.torlock.com"
+  private let domain = "https://www.torlock2.com"
   private let searchPath = "/all/torrents"
   private let searchExtension = ".html"
   private let searchParams = "?sort=seeds&order=desc"
