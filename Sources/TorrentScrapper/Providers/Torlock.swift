@@ -14,6 +14,10 @@ class Torlock {
 extension Torlock: TorrentProvider {
 
   func searchURL(text: String) throws -> URL? {
+    if text.isEmpty {
+      return nil
+    }
+
     let escapedText = text.replacingOccurrences(of: " ", with: "-")
     let string = self.domain + self.searchPath + "/" + escapedText + self.searchExtension + self.searchParams
 

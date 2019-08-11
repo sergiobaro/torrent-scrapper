@@ -5,6 +5,12 @@ class TorlockTests: XCTestCase {
 
   let torlock = Torlock()
 
+  func test_searchEmpty() {
+    let result = try? self.torlock.searchURL(text: "")
+
+    XCTAssertNil(result)
+  }
+
   func test_searchText() {
     let result = try? self.torlock.searchURL(text: "euphoria")
     
