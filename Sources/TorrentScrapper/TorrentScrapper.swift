@@ -12,9 +12,8 @@ public enum TorrentError: Error {
 }
 
 protocol TorrentProvider {
-
-  func searchURL(text: String) throws -> URL
-  func parseList(doc: Document) throws -> TorrentResult?
+  func searchURL(text: String) throws -> URL?
+  func parseList(doc: Document) throws -> [TorrentResult]
   func parseDetail(doc: Document) throws -> TorrentResult?
 }
 
@@ -29,24 +28,27 @@ public class TorrentScrapper {
   }
 
   public func search(text: String) throws {
-    guard !text.isEmpty else {
-      self.logger.log("Empty search")
+    guard let url = try self.provider.searchURL(text: text) else {
+      self.logger.log("Empty search.")
       return
     }
 
     self.logger.log("Search: " + text)
 
-    let url = try self.provider.searchURL(text: text)
-    let listDoc = try self.downloadPage(url: url)
+    let document = try self.downloadPage(url: url)
 
-    guard let listResult = try self.provider.parseList(doc: listDoc) else {
+    let torrents = try self.provider.parseList(doc: document)
+    if torrents.isEmpty {
       self.logger.log("No torrent found.")
       return
     }
 
-    self.logger.log("Found: " + listResult.name)
+    self.logger.log("Found \(torrents.count) torrents.")
 
-    try self.processDetail(result: listResult)
+    for torrent in torrents {
+      self.logger.log("Found: " + torrent.name)
+      try self.processDetail(result: torrent)
+    }
   }
 }
 

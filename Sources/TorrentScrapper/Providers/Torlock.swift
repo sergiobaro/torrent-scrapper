@@ -13,7 +13,7 @@ class Torlock {
 // MARK: - TorrentProvider
 extension Torlock: TorrentProvider {
 
-  func searchURL(text: String) throws -> URL {
+  func searchURL(text: String) throws -> URL? {
     let escapedText = text.replacingOccurrences(of: " ", with: "-")
     let string = self.domain + self.searchPath + "/" + escapedText + self.searchExtension + self.searchParams
 
@@ -24,18 +24,18 @@ extension Torlock: TorrentProvider {
     return url
   }
 
-  func parseList(doc: Document) throws -> TorrentResult? {
+  func parseList(doc: Document) throws -> [TorrentResult] {
     for div in try doc.select("div.panel.panel-default") {
       for table in try div.select(".table.table-striped.table-bordered.table-hover.table-condensed") {
         for row in try table.select("tr") {
           if let result = try self.parseResult(row: row) {
-            return result
+            return [result]
           }
         }
       }
     }
 
-    return nil
+    return []
   }
 
   func parseDetail(doc: Document) throws -> TorrentResult? {
