@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-swift build -Xswiftc "-target" -Xswiftc "x86_64-apple-macosx10.12"
+swift build
 .build/debug/torrent-scrapper $@

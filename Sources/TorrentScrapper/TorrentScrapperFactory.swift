@@ -8,4 +8,11 @@ public class TorrentScrapperFactory {
       logger: TerminalTorrentLogger()
     )
   }
+  
+  public static func makeRarbg() -> TorrentScrapper {
+    return TorrentScrapper(
+      provider: Rarbg(),
+      logger: TerminalTorrentLogger()
+    )
+  }
 }
