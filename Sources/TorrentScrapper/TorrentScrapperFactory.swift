@@ -15,4 +15,11 @@ public class TorrentScrapperFactory {
       logger: TerminalTorrentLogger()
     )
   }
+  
+  public static func makeMagnetTdl() -> TorrentScrapper {
+    return TorrentScrapper(
+      provider: MagnetTdl(),
+      logger: TerminalTorrentLogger()
+    )
+  }
 }

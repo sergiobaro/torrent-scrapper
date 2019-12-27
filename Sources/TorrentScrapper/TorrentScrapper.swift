@@ -52,10 +52,10 @@ public class TorrentScrapper {
   }
 }
 
-// MARK: Private
-extension TorrentScrapper {
+// MARK: - Private
+private extension TorrentScrapper {
 
-  private func processDetail(result: TorrentResult) throws {
+  func processDetail(result: TorrentResult) throws {
     // magnet link
     if let magnetURL = result.magnetURL {
       self.logger.log("Opening magnet link")
@@ -77,7 +77,7 @@ extension TorrentScrapper {
   }
 
   @discardableResult
-  private func shell(_ args: String...) -> Int32 {
+  func shell(_ args: String...) -> Int32 {
     let task = Process()
 
     task.launchPath = "/usr/bin/env"
@@ -88,10 +88,32 @@ extension TorrentScrapper {
     return task.terminationStatus
   }
 
-  private func downloadPage(url: URL) throws -> Document {
+  func downloadPage(url: URL) throws -> Document {
     self.logger.log("Downloading: \(url.absoluteString)")
-
-    let html = try String(contentsOf: url)
+    
+    let (data, _, _) = self.downloadPageSync(url: url)
+    let html = String(data: data!, encoding: .utf8)!
+    
     return try SwiftSoup.parse(html)
+  }
+  
+  func downloadPageSync(url: URL) -> (Data?, URLResponse?, Error?) {
+    var result: (Data?, URLResponse?, Error?)
+    
+    let semaphore = DispatchSemaphore(value: 0)
+    
+    var request = URLRequest(url: url)
+    request.addValue("text/html", forHTTPHeaderField: "Accept")
+    request.addValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36", forHTTPHeaderField: "User-Agent")
+    
+    let task = URLSession.shared.dataTask(with: request) { data, response, error in
+      result = (data, response, error)
+      semaphore.signal()
+    }
+    task.resume()
+    
+    semaphore.wait()
+    
+    return result
   }
 }
