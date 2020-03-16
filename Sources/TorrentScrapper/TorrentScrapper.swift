@@ -12,6 +12,8 @@ public enum TorrentError: Error {
 }
 
 protocol TorrentProvider {
+  var name: String { get }
+  
   func searchURL(text: String) throws -> URL?
   func parseList(doc: Document) throws -> [TorrentResult]
   func parseDetail(doc: Document) throws -> TorrentResult?
@@ -25,28 +27,30 @@ public class TorrentScrapper {
   init(provider: TorrentProvider, logger: TorrentLogger) {
     self.provider = provider
     self.logger = logger
+    
+    self.logger.info("Provider: \(self.provider.name)")
   }
 
   public func search(text: String) throws {
     guard let url = try self.provider.searchURL(text: text) else {
-      self.logger.log("Empty search.")
+      self.logger.error("Empty search.")
       return
     }
 
-    self.logger.log("Search: " + text)
+    self.logger.info("Search: " + text)
 
     let document = try self.downloadPage(url: url)
 
     let torrents = try self.provider.parseList(doc: document)
     if torrents.isEmpty {
-      self.logger.log("No torrent found.")
+      self.logger.error("No torrent found.")
       return
     }
 
-    self.logger.log("Found \(torrents.count) torrents.")
+    self.logger.info("Found \(torrents.count) torrents.")
 
     for torrent in torrents {
-      self.logger.log("Found: " + torrent.name)
+      self.logger.info("Found: " + torrent.name)
       try self.processDetail(result: torrent)
     }
   }
@@ -58,7 +62,7 @@ private extension TorrentScrapper {
   func processDetail(result: TorrentResult) throws {
     // magnet link
     if let magnetURL = result.magnetURL {
-      self.logger.log("Opening magnet link")
+      self.logger.info("Opening magnet link")
       self.shell("open", magnetURL.absoluteString)
 
       return
@@ -68,7 +72,7 @@ private extension TorrentScrapper {
     if let detailPageURL = result.detailPageURL {
       let detailDoc = try self.downloadPage(url: detailPageURL)
       guard let detailResult = try self.provider.parseDetail(doc: detailDoc) else {
-        self.logger.log("No detail found.")
+        self.logger.error("No detail found.")
         return
       }
 
@@ -89,7 +93,7 @@ private extension TorrentScrapper {
   }
 
   func downloadPage(url: URL) throws -> Document {
-    self.logger.log("Downloading: \(url.absoluteString)")
+    self.logger.info("Downloading: \(url.absoluteString)")
     
     let (data, _, _) = self.downloadPageSync(url: url)
     let html = String(data: data!, encoding: .utf8)!

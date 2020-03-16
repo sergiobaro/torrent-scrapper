@@ -10,6 +10,8 @@ class MagnetTdl {
 
 extension MagnetTdl: TorrentProvider {
   
+  var name: String { "MagnetTDL" }
+  
   func searchURL(text: String) throws -> URL? {
     guard text.count > 1 else {
       return nil

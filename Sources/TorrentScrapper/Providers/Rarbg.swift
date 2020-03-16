@@ -12,6 +12,8 @@ class Rarbg {
 // MARK: - TorrentProvider
 extension Rarbg: TorrentProvider {
   
+  var name: String { "Rarbg" }
+  
   func searchURL(text: String) throws -> URL? {
     if text.isEmpty {
       return nil

@@ -12,6 +12,8 @@ class Torlock {
 
 // MARK: - TorrentProvider
 extension Torlock: TorrentProvider {
+  
+  var name: String { "Torlock" }
 
   func searchURL(text: String) throws -> URL? {
     if text.isEmpty {
